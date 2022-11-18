@@ -3,64 +3,66 @@ import "./ResultsList.css";
 
 const ResultsList = (props) => {
   const [gists, setGists] = useState([]);
-  const [forks,setForks]=useState([]);
+  const [forks, setForks] = useState(["", "", ""]);
   const [rerender, setRerender] = useState(false);
 
   useEffect(() => {
     setGists(props.gists);
   }, [props.gists]);
 
-  function getAllForks(url) {
-    fetch(url+"?per_page=3")
-      .then((res) => res.json())
-      .then((json) => {
-        setForks(json);
-      });
-  }
-
   const table = gists.map((gist) => {
     {
       return (
         <tr>
           <td>
-            {Object.entries(gist.files).map(([fileKey, fileValue], fileIndex) => {
-              return (
-                <p>
-                  {fileValue.language}
-                </p>
-              );
-            })}
+            {Object.entries(gist.files).map(
+              ([fileKey, fileValue], fileIndex) => {
+                return <p>{fileValue.language}</p>;
+              }
+            )}
           </td>
           <td>
-            {Object.entries(gist.files).map(([fileKey, fileValue], fileIndex) => {
-              return (
-                <p>
-                  {fileValue.filename}
-                </p>
-              );
-            })}
+            {Object.entries(gist.files).map(
+              ([fileKey, fileValue], fileIndex) => {
+                return (
+                  <p>
+                    <a href={gist.html_url}>{fileValue.filename}</a>
+                  </p>
+                );
+              }
+            )}
           </td>
-          <td>
-            { getAllForks(gist.forks_url)}
-            {forks.map((fork)=>{
-            Object.entries(fork.owner).map(([forkKey, forkValue], forkIndex) => {
-              return (
-                <p>
-                  {fileValue.login}
-                </p>
-              );
-            })})}
-          </td>
+
+          {/*CODE THAT SHOULD FETCH THE FORKS
+                      <td>
+            {fetch(gist.forks_url + "?per_page=3")
+              .then((res) => res.json())
+              .then((json) => {
+                if (json !== undefined) {
+                  json.map((fork) => {
+                    Object.entries(fork.owner).map(
+                      ([forkKey, forkValue], forkIndex) => {
+                        return <p>{forkValue.login}</p>;
+                      }
+                    );
+                  });
+                }
+              })}          </td>
+              */}
 
           {Object.entries(gist).map(([key, value], index) => {
             if (typeof value !== "object") return <td>{value}</td>;
-
           })}
         </tr>
       );
     }
   });
-  const tags=<><th>Tags</th><th>Files</th><th>Forks</th></>;
+  const tags = (
+    <>
+      <th>Tags</th>
+      <th>Files</th>
+    </>
+  );
   return (
     <div className="ResultsList">
       <table>
@@ -71,9 +73,7 @@ const ResultsList = (props) => {
               return <th>{key}</th>;
             })}
         </thead>
-        <tbody>
-          {table}
-        </tbody>
+        <tbody>{table}</tbody>
       </table>
     </div>
   );
